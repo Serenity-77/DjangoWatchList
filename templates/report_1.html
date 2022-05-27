@@ -1,0 +1,24 @@
+{% extends "header.html" %}
+{% load static %}
+{% block content_title %}
+Report 1
+{% endblock %}
+{% block content %}
+<form method="GET" class="form-inline" action="/reports/1">
+    <div class="form-group mx-sm-3 mb-2">
+        <label for="inputPassword2" class="sr-only">Date</label>
+        <input type="date" class="form-control" id="report_date" name="report_date">
+    </div>
+    <button type="submit" class="btn btn-primary mb-2">Submit</button>
+</form>
+
+<div class="small-box bg-gradient-success">
+    <div class="inner">
+        <h3>{{ count }}</h3>
+        <p>User Registrations</p>
+    </div>
+    <div class="icon">
+        <i class="fas fa-user-plus"></i>
+    </div>
+</div>
+{% endblock %}

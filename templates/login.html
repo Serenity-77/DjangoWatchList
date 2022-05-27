@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% load static %}
+{% block cssfile %}
+<link rel="stylesheet" href="{% static 'bootstrap4-dialog/dist/css/bootstrap-dialog.min.css' %}">
+{% endblock %}
+{% block base_content %}
+<div class="register-page" style="min-height: 496.781px;">
+    <div class="register-box">
+        <div class="card">
+            <div class="card-body register-card-body">
+                <p class="login-box-msg">Login</p>
+                {% for field in form %}
+                    <div class="input-group mb-3">
+                        {% if field.html_name == "password" or field.html_name == "repassword" %}
+                            <input type="password" class="form-control" name="{{ field.html_name }}" placeholder="{{ field.label }}">
+                        {% else %}
+                            <input type="text" class="form-control" name="{{ field.html_name }}" placeholder="{{ field.label }}">
+                        {% endif %}
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="{{ field.field.widget.attrs.fa }}"></span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-8">
+                        <button type="button" id="login-button" class="btn btn-primary">Login</button>
+                    </div>
+                    <div class="col-4">
+                        <a class="btn btn-info" role="button" href="/register/">Register</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block jsfile %}
+<script src="{% static 'bootstrap4-dialog/dist/js/bootstrap-dialog.min.js' %}"></script>
+{% endblock %}
+
+{% block javascript %}
+(function($){
+    $(document).ready(function(){
+        var $inputElements = {},
+            $submitButton = $("#login-button");
+
+        $.each(["username", "password"], function(i, t){
+            $inputElements[t] = $("input[name=" + t + "]")
+        })
+
+        $submitButton.on("click", function(){
+            var data = {},
+                self = this;
+
+            try {
+                validate($inputElements, data)
+            } catch(e) {
+                showMessage(e, true)
+                return
+            }
+
+            $(this).prop("disabled", true)
+            $(this).html(
+                `<i class="fa fa-spinner fa-spin"></i> Register`
+            );
+
+            data['csrfmiddlewaretoken'] = '{{ csrf_token }}',
+
+            $.ajax({
+                url: '/',
+                type: 'POST',
+                data: data
+            }).then(function(){
+                window.location.href = "/"
+            }).fail(function(e){
+                showMessage(!!e ? ajaxErrorMessage(e) || "Error Occured" : "Error Occured", true)
+            }).always(function(){
+                $(self).prop("disabled", false)
+                $(self).empty()
+                $(self).html("Register")
+            })
+        })
+
+    })
+
+    function validate() {
+        let a = arguments,
+            $inputElements = a[0],
+            data = a[1],
+            inputElements;
+
+        for(k in $inputElements) {
+            let inputElement = $inputElements[k]
+
+            switch(k) {
+                case "username":
+                    value = inputElement.val().trim()
+                    if(!value) {
+                        throw Error("Username: This field is required")
+                    }
+                    break;
+                case "password":
+                    value = inputElement.val().trim()
+                    if(!value) {
+                        throw Error("Password: This field is required")
+                    }
+                    break;
+            }
+
+            data[k] = value
+        }
+    }
+
+    function showMessage()
+    {
+        var a = arguments,
+            message = a[0],
+            isError = a[1],
+            onClose = a[2];
+
+        if(message instanceof Error)
+            message = message.message
+
+        if(window.BootstrapDialog)
+        {
+            var d = new BootstrapDialog()
+            d.setAnimate(false)
+            if(isError)
+            {
+                d.setTitle("<b>Errors</b>")
+                d.setType(BootstrapDialog.TYPE_DANGER)
+                d.setMessage("<div class='alert alert-danger' style='font-weight:bold'>" + message + "</div>")
+            }
+            else
+            {
+                d.setTitle("<b>Message</b>")
+                d.setType(BootstrapDialog.TYPE_PRIMARY)
+                d.setMessage("<div style='font-weight:bold'>" + message + "</div>")
+            }
+
+            d.setClosable(false)
+            d.addButton({
+                label: "<b>Close</b>",
+                cssClass: isError ? "btn btn-danger btn-flat" : "btn btn-primary btn-flat",
+                action: function(){
+                    d.close()
+                    if(onClose)
+                        onClose.call(this)
+                }
+            })
+            d.open();
+        }
+        else
+        {
+            alert(message);
+        }
+    }
+
+    function ajaxErrorMessage(r)
+    {
+        if(r.readyState == 0) {
+            return null
+        }
+        if(r.getResponseHeader('content-type').indexOf("text/html") >= 0)
+            return null;
+        return r.responseText
+    }
+
+})(jQuery)
+{% endblock %}

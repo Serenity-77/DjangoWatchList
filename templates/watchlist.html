@@ -1,0 +1,194 @@
+{% extends "header.html" %}
+{% load static %}
+{% block cssfile %}
+<link rel="stylesheet" href="{% static 'bootstrap4-dialog/dist/css/bootstrap-dialog.min.css' %}">
+{% endblock %}
+{% block content_title %}
+Watch List
+{% endblock %}
+{% block content %}
+    <div class="col-md-12">
+        <div class="table-container">
+            <table class="table table-striped table-dark" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Overview</th>
+                        <th>Note</th>
+                        <th>Adult</th>
+                        <th>Popularity</th>
+                        <th>Relese Date</th>
+                        <th>Vote Count</th>
+                        <th>Operation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for items in movies %}
+                        <tr>
+                            <td>{{ items.2.title }}</td>
+                            <td>{{ items.2.overview }}</td>
+                            <td is_note="true">{{ items.1 }}</td>
+                            {% if not items.2.adult %}
+                                <td>No</td>
+                            {% else %}
+                                <td>Yes</td>
+                            {% endif %}
+                            <td>{{ items.2.popularity }}</td>
+                            <td>{{ items.2.release_date }}</td>
+                            <td>{{ items.2.vote_count }}</td>
+                            <td>
+                                <button watchlist_id="{{ items.0 }}" action="edit" id="btn_edit_{{ items.0 }}" title="Edit Watch List">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                <button watchlist_id="{{ items.0 }}" action="delete" id="btn_delete_{{ items.0 }}" title="Delete Watch List">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block jsfile %}
+<script src="{% static 'bootstrap4-dialog/dist/js/bootstrap-dialog.min.js' %}"></script>
+{% endblock %}
+{% block javascript %}
+(function($){
+    $(document).ready(function(){
+        $("button[id^=btn_]").each(function(t, e){
+            $(e).on("click", doAction)
+        })
+    })
+
+    function doAction() {
+        var a = arguments,
+            $e = $(this).find("> i"),
+            self = this,
+            watchListId = $(this).attr("watchlist_id")
+            action = $(this).attr("action")
+            clsAttr = $e.attr("class"),
+            data = {},
+            f = function() {
+                var a = arguments;
+                    p = a.length > 0 ? a[0] : void 0;
+
+                data['csrfmiddlewaretoken'] = '{{ csrf_token }}'
+
+                p ? Object.assign(data, p) : void 0
+
+                return $.ajax({
+                    url: '/watchlist/' + watchListId,
+                    type: action == "delete" ? 'DELETE' : "POST",
+                    data: data
+                }).then(function(){
+                    window.location.reload()
+                }).fail(function(e){
+                    showMessage(!!e ? ajaxErrorMessage(e) || "Error Occured" : "Error Occured", true)
+                })
+            };
+
+        if(action == "delete") {
+            $(this).prop("disabled", true)
+            $e.removeClass().addClass("fa fa-spinner fa-spin fa-x fa-fw")
+
+            f().always(function(){
+                $(self).prop("disabled", false)
+                $e.removeClass().addClass(clsAttr)
+            })
+        } else {
+            var d = new BootstrapDialog(),
+                noteTd = $(this).parent().siblings().eq(2);
+            d.setAnimate(false);
+            d.setClosable(true);
+            d.setType(BootstrapDialog.TYPE_DEFAULT);
+            d.setTitle("Edit")
+            d.setMessage(
+                `
+                    <div class="form-group row">
+                        <label for="Note">Note</label>
+                        <textarea id="note_input" class="form-control" rows="3" placeholder="Enter ..."></textarea>
+                    </div>
+                `
+            )
+            d.addButton({
+                label: "<b>Submit</b>",
+                icon: "glyphicon glyphicon-send",
+                cssClass: "btn btn-primary btn-flat",
+                action: function(){
+                    var $btn = this,
+                        noteVal = $("#note_input").val().trim();
+                    $btn.spin()
+                    $btn.disable()
+
+                    f({note: noteVal}).always(function(){
+                        $btn.stopSpin()
+                        $btn.enable()
+                    })
+                }
+            })
+            d.onShown(function(){
+                $("#note_input").val(noteTd.text())
+            })
+            d.open()
+        }
+    }
+
+    function showMessage()
+    {
+        var a = arguments,
+            message = a[0],
+            isError = a[1],
+            onClose = a[2];
+
+        if(message instanceof Error)
+            message = message.message
+
+        if(window.BootstrapDialog)
+        {
+            var d = new BootstrapDialog()
+            d.setAnimate(false)
+            if(isError)
+            {
+                d.setTitle("<b>Errors</b>")
+                d.setType(BootstrapDialog.TYPE_DANGER)
+                d.setMessage("<div class='alert alert-danger' style='font-weight:bold'>" + message + "</div>")
+            }
+            else
+            {
+                d.setTitle("<b>Message</b>")
+                d.setType(BootstrapDialog.TYPE_PRIMARY)
+                d.setMessage("<div style='font-weight:bold'>" + message + "</div>")
+            }
+
+            d.setClosable(false)
+            d.addButton({
+                label: "<b>Close</b>",
+                cssClass: isError ? "btn btn-danger btn-flat" : "btn btn-primary btn-flat",
+                action: function(){
+                    d.close()
+                    if(onClose)
+                        onClose.call(this)
+                }
+            })
+            d.open();
+        }
+        else
+        {
+            alert(message);
+        }
+    }
+
+    function ajaxErrorMessage(r)
+    {
+        if(r.readyState == 0) {
+            return null
+        }
+        if(r.getResponseHeader('content-type').indexOf("text/html") >= 0)
+            return null;
+        return r.responseText
+    }
+
+})(jQuery)
+{% endblock %}

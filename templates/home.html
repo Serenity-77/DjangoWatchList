@@ -1,0 +1,152 @@
+{% extends "header.html" %}
+{% load static %}
+{% block cssfile %}
+<link rel="stylesheet" href="{% static 'bootstrap4-dialog/dist/css/bootstrap-dialog.min.css' %}">
+<link rel="stylesheet" href="{% static 'adminlte/plugins/datatables/jquery.dataTables.min.css' %}">
+{% endblock %}
+{% block content_title %}
+Movie List
+{% endblock %}
+{% block content %}
+    <div class="col-md-12">
+        <div class="table-container">
+        </div>
+    </div>
+{% endblock %}
+{% block jsfile %}
+<script src="{% static 'bootstrap4-dialog/dist/js/bootstrap-dialog.min.js' %}"></script>
+<script src="{% static 'adminlte/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+{% endblock %}
+{% block javascript %}
+(function($){
+    $.fn.dataTable.ext.errMode = 'none';
+    $(document).ready(function(){
+        var $tableContainer = $(".table-container"),
+            $table = $(`<table class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Overview</th>
+                        <th>Adult</th>
+                        <th>Popularity</th>
+                        <th>Relese Date</th>
+                        <th>Vote Count</th>
+                        <th>Add</th>
+                    </tr>
+                </thead>
+            </table>`);
+
+        $tableContainer.append($table)
+
+        $table.DataTable({
+            processing: true,
+            serverSide: true,
+            searching: false,
+            ajax: "/watchlist/",
+            columnDefs: [
+                {
+                    render: function(data, type, row) {
+                        // fa fa-spinner fa-spin fa-x fa-fw
+                        return `<button data-id="` + data + `" class="btn btn-info" title="Add To Watch List">
+                                    <i class="fa fa-plus"></i>
+                                </button>`
+                    },
+                    targets: 6
+                }
+            ],
+
+            createdRow: function (row, data, index) {
+                $("td", row).eq(6).find("> button").on("click", addOnClick)
+            },
+
+        })
+    })
+
+    function addOnClick() {
+        let a = arguments,
+            e = $(this).find("> i"),
+            dataId = $(this).attr("data-id");
+
+        if(!dataId) {
+            showMessage("Incomplete Parameters", true)
+            return
+        }
+
+        $(this).prop("disabled", true)
+        e.removeClass().addClass("fa fa-spinner fa-spin fa-x fa-fw")
+
+        $.ajax({
+            url: '/watchlist/',
+            type: 'POST',
+            data: {movie_id: dataId}
+        }).then(function(){
+            window.location.href = "/"
+        }).fail(function(e){
+            showMessage(!!e ? ajaxErrorMessage(e) || "Error Occured" : "Error Occured", true)
+        }).always(function(){
+            $(self).prop("disabled", false)
+            e.removeClass().addClass("fa fa-plus")
+        })
+        /*setTimeout(function(){
+            e.removeClass().addClass("fa fa-trash")
+        }, 2500)*/
+    }
+
+    function showMessage()
+    {
+        var a = arguments,
+            message = a[0],
+            isError = a[1],
+            onClose = a[2];
+
+        if(message instanceof Error)
+            message = message.message
+
+        if(window.BootstrapDialog)
+        {
+            var d = new BootstrapDialog()
+            d.setAnimate(false)
+            if(isError)
+            {
+                d.setTitle("<b>Errors</b>")
+                d.setType(BootstrapDialog.TYPE_DANGER)
+                d.setMessage("<div class='alert alert-danger' style='font-weight:bold'>" + message + "</div>")
+            }
+            else
+            {
+                d.setTitle("<b>Message</b>")
+                d.setType(BootstrapDialog.TYPE_PRIMARY)
+                d.setMessage("<div style='font-weight:bold'>" + message + "</div>")
+            }
+
+            d.setClosable(false)
+            d.addButton({
+                label: "<b>Close</b>",
+                cssClass: isError ? "btn btn-danger btn-flat" : "btn btn-primary btn-flat",
+                action: function(){
+                    d.close()
+                    if(onClose)
+                        onClose.call(this)
+                }
+            })
+            d.open();
+        }
+        else
+        {
+            alert(message);
+        }
+    }
+
+    function ajaxErrorMessage(r)
+    {
+        if(r.readyState == 0) {
+            return null
+        }
+        if(r.getResponseHeader('content-type').indexOf("text/html") >= 0)
+            return null;
+        return r.responseText
+    }
+
+
+})(jQuery)
+{% endblock %}

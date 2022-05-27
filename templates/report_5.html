@@ -1,0 +1,35 @@
+{% extends "header.html" %}
+{% load static %}
+{% block content_title %}
+Report 5
+{% endblock %}
+{% block content %}
+    <form method="GET" class="form-inline" action="/reports/5">
+        <div class="form-group mx-sm-3 mb-2">
+            <label for="inputPassword2" class="sr-only">Date</label>
+            <input type="date" class="form-control" id="report_date" name="report_date">
+        </div>
+        <button type="submit" class="btn btn-primary mb-2">Submit</button>
+    </form>
+
+    <div class="col-md-12">
+        <div class="table-container">
+            <table class="table table-striped table-dark" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for items in results %}
+                        <tr>
+                            <td>{{ items.title }}</td>
+                            <td>{{ items.rank }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
