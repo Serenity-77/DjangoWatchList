@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-+3eet27na5xm3_t##-j1a^*s1sdpj3z$ivx*-*xp4tdsymiug4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "stormy-depths-39768.herokuapp.com"]
+ALLOWED_HOSTS = ["localhost", "stormy-depths-39768.herokuapp.com", "0.0.0.0"]
 
 
 # Application definition
@@ -135,6 +135,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     BASE_DIR / 'tmp/static/'
 ]
+
+STATIC_ROOT = BASE_DIR / 'static/'
 
 LOGIN_URL = "/"
 
