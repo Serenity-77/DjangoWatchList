@@ -7,5 +7,7 @@ python manage.py fetch_tmdb_list
 
 Superuser to view reports:
 
+```shell
 user: watchlistsu
 password: watchlistsu
+```
