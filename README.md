@@ -4,3 +4,8 @@
 ```shell
 python manage.py fetch_tmdb_list
 ```
+
+Superuser to view reports:
+
+user: watchlistsu
+password: watchlistsu
