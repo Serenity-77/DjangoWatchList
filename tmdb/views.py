@@ -44,7 +44,7 @@ class WatchList(LoginRequiredMixin, View, OperationMixin):
             return HttpResponse("Incomplete Parameters", status=422, content_type="text/plain")
 
         cleaned_data = form.cleaned_data
-        results = TmdbMovie.objects.raw("SELECT * FROM tmdb_movies OFFSET %d LIMIT %d" % (cleaned_data['start'], cleaned_data['length']))
+        results = TmdbMovie.objects.raw("SELECT * FROM tmdb_movies LIMIT %d, %d" % (cleaned_data['start'], cleaned_data['length']))
         recordsTotal = TmdbMovie.objects.count()
 
         resp = []
