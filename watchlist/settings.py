@@ -102,7 +102,7 @@ DATABASES = {
         'NAME': 'watchlist',
         'USER': 'watchlist',
         'PASSWORD': 'password',
-        'HOST': 'postgresql-sinuous-29455',
+        'HOST': 'localhost',
         'PORT': '',
     }
 }
