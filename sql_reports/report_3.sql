@@ -1,13 +1,25 @@
 SELECT
 	auth_user.username,
-	FLOOR(AVG(a.total)) AS average
+	c.average
 FROM
 (
 	SELECT
-		COUNT(*) AS total,
-		watch_list.user_id
-	FROM watch_list
-	GROUP BY watch_list.user_id, DATE(watch_list.date_added)
-)a JOIN auth_user
-ON a.user_id = auth_user.id
-GROUP BY a.user_id;
+		b.user_id,
+		FLOOR(AVG(b.total)) AS average
+	FROM
+	(
+		SELECT
+			COUNT(*) AS total,
+			a.user_id
+		FROM
+		(
+			SELECT
+				watch_list.user_id,
+				watch_list.date_added
+			FROM watch_list
+		)a
+		GROUP BY a.user_id, DATE(a.date_added)
+	)b
+	GROUP BY b.user_id
+)c JOIN auth_user
+ON c.user_id = auth_user.id;

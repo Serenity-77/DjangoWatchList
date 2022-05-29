@@ -79,34 +79,34 @@ WSGI_APPLICATION = 'watchlist.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'watchlist',
-#         'USER': 'root',
-#         'PASSWORD': 'rootdb',
-#         'HOST': 'localhost',
-#         'PORT': '3306'
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'watchlist.db',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'watchlist',
+        'USER': 'root',
+        'PASSWORD': 'rootdb',
+        'HOST': 'localhost',
+        'PORT': '3306'
     }
 }
 
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'watchlist',
-#         'USER': 'watchlist',
-#         'PASSWORD': 'password',
-#         'HOST': 'localhost',
-#         'PORT': '',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'watchlist.db',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'watchlist',
+        'USER': 'watchlist',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
 
 
 

@@ -1,8 +1,13 @@
 SELECT
 	tmdb_movies.title,
-	COUNT(*) AS rank
-FROM watch_list JOIN tmdb_movies
-ON watch_list.movie_id = tmdb_movies.id
-WHERE MONTH(watch_list.date_added) = %s
-AND YEAR(watch_list.date_added) = %s
-GROUP BY watch_list.movie_id;
+	a.rank
+FROM
+(
+	SELECT
+		watch_list.movie_id,
+		COUNT(*) AS rank
+	FROM watch_list
+	WHERE TO_CHAR(watch_list.date_added, 'MM-YYYY') = %s
+	GROUP BY watch_list.movie_id
+)a JOIN tmdb_movies
+ON a.movie_id = tmdb_movies.id

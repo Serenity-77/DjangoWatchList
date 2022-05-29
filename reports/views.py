@@ -20,8 +20,9 @@ def get_report_month_year(request):
     else:
         req_year, req_month, _ = req_date.split("-")
 
-    if req_month[0] == "0":
-        req_month = req_month[1]
+    # mysql
+    # if req_month[0] == "0":
+    #     req_month = req_month[1]
 
     return req_month, req_year
 
@@ -35,7 +36,7 @@ class Reports(LoginRequiredMixin, View):
     def report_1(self, request):
         req_month, req_year = get_report_month_year(request)
         sql = self.get_sql_report(1)
-        r = self.execute_query(sql, (req_month, req_year, ))
+        r = self.execute_query(sql, "%s-%s" % (req_month, req_year, ))
         return render(request, "report_1.html", {'count': 0 if not r else r['count']})
 
     def report_2(self, request):
@@ -61,11 +62,11 @@ class Reports(LoginRequiredMixin, View):
     def report_5(self, request):
         req_month, req_year = get_report_month_year(request)
         sql = self.get_sql_report(5)
-        results = self.execute_query(sql, (req_month, req_year, ), one_row=False)
+        results = self.execute_query(sql, "%s-%s" % (req_month, req_year, ), one_row=False)
         return render(request, "report_5.html", {'results': results})
 
     @staticmethod
-    def execute_query(sql, args=(), one_row=True):
+    def execute_query(sql, *args, one_row=True):
         cursor = connection.cursor()
         cursor.execute(sql, args)
 
