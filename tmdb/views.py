@@ -8,12 +8,12 @@ from django.shortcuts import render
 from .forms import MoviesForm, WatchListForm
 from .models import TmdbMovie, WatchList as WatchListModel
 from operation.views import OperationMixin
-from operation.models import Operation
+# from operation.models import Operation
 
 
 class UserWatchList(LoginRequiredMixin, View, OperationMixin):
 
-    operation = Operation.READ
+    # operation = Operation.READ
 
     def get(self, request):
         results = WatchListModel.objects.select_related(
@@ -35,7 +35,7 @@ class UserWatchList(LoginRequiredMixin, View, OperationMixin):
 
 class WatchList(LoginRequiredMixin, View, OperationMixin):
 
-    operation = Operation.ADD
+    # operation = Operation.ADD
 
     def get(self, request):
         form = MoviesForm(request.GET)

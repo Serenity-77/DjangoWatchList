@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import OperationDetail, Operation
+# from .models import OperationDetail, Operation
 
 
 class OperationMixin:
