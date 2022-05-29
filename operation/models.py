@@ -22,7 +22,8 @@ class Operation(models.Model):
     operation_name = models.CharField(
         max_length=6,
         choices=OPERATION_TYPES,
-        default=ADD)
+        default=ADD,
+        unique=True)
 
 
 
