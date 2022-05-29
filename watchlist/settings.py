@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import django_heroku
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -164,3 +165,6 @@ LOGIN_URL = "/"
 TMDB_API_KEY = "0b058309a4e9c3898306e6686066ca48"
 TMDB_API_CONFIGURATION_URL = "https://api.themoviedb.org/3/configuration"
 TMDB_API_LIST_URL = "https://api.themoviedb.org/4/list"
+
+
+django_heroku.settings(locals())
