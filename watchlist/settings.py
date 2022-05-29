@@ -158,7 +158,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'tmp/static/'
 ]
 
-STATIC_ROOT = BASE_DIR / 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles/'
 
 LOGIN_URL = "/"
 
