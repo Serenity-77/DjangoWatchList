@@ -11,11 +11,10 @@ class OperationConfig(AppConfig):
         AppConfig.ready(self)
 
     def _maybe_add_operation(self):
-        # from operation.models import Operation
-        # for op_name in [Operation.ADD, Operation.EDIT, Operation.READ, Operation.DELETE]:
-        #     try:
-        #         operation = Operation(operation_name=op_name)
-        #         operation.save()
-        #     except IntegrityError:
-        #         pass
-        pass
+        from operation.models import Operation
+        for op_name in [Operation.ADD, Operation.EDIT, Operation.READ, Operation.DELETE]:
+            try:
+                operation = Operation(operation_name=op_name)
+                operation.save()
+            except IntegrityError:
+                pass
