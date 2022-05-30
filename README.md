@@ -4,3 +4,17 @@
 ```shell
 python manage.py fetch_tmdb_list
 ```
+
+Superuser to view reports:
+
+```shell
+user: watchlistsu
+password: watchlistsu
+```
+
+
+Heroku URL: 
+
+```shell
+https://stormy-depths-39768.herokuapp.com/
+```
