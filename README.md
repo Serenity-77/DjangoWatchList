@@ -5,6 +5,11 @@
 python manage.py fetch_tmdb_list
 ```
 
+2. Run Test
+```shell
+python manage.py test
+```
+
 Superuser to view reports:
 
 ```shell
